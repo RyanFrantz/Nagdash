@@ -24,8 +24,9 @@ document.refresh_every_ms = 200000000;
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/blinkftw.css">
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/frantz.css">
 <style type="text/css">
-  <?php foreach ($nagios_hosts as $host) {
+  <?php foreach ($upstream_nagios_hosts as $host) {
         echo ".tag_{$host['tag']}   { background-color: {$host['tagcolour']} }\n";
   } ?>
 </style>
@@ -38,7 +39,7 @@ document.refresh_every_ms = 200000000;
 <body>
   <div id="spinner"><h3><img src="images/ajax-loader.gif" align="absmiddle"> Refreshing...</h3></div>
   <div id="nagioscontainer"></div>
-  <?php NagdashHelpers::render("settings_dialog.php", ["nagios_hosts" => $nagios_hosts,
+  <?php NagdashHelpers::render("settings_dialog.php", ["upstream_nagios_hosts" => $upstream_nagios_hosts,
                                                        "unwanted_hosts" => $unwanted_hosts]);?>
 
 
@@ -48,7 +49,7 @@ document.refresh_every_ms = 200000000;
             $("#settings_modal").modal();
         }
     });
-    $(document).ready(load_nagios_data(<?php echo ($show_refresh_spinner === true)?>));
+    $(document).ready(load_cluster_data(<?php echo ($show_refresh_spinner === true)?>));
 </script>
 </body>
 </html>

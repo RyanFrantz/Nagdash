@@ -25,7 +25,8 @@ if (!isset($_POST['nag_host'])) {
         echo "Nagios-api does not support this action ({$action}) yet. ";
     } else {
 
-        foreach ($nagios_hosts as $host) {
+        //foreach ($nagios_hosts as $host) {
+        foreach ($upstream_nagios_hosts as $host) {
             if ($host['tag'] == $nagios_instance) {
                 $nagios_api = NagdashHelpers::get_nagios_api_object($api_type,
                     $host["hostname"], $host["port"], $host["protocol"], $host["url"]);

@@ -45,7 +45,8 @@ class NagiosLivestatus implements iNagiosConnection {
             $url . "/services?" .
             "Columns=description,host_name,plugin_output,notifications_enabled," .
             "downtimes,scheduled_downtime_depth,state,last_state_change," .
-            "current_attempt,max_check_attempts,acknowledged"
+            "current_attempt,max_check_attempts,acknowledged," .
+            "long_plugin_ouput,notes,action_url"
         );
 
         $services = $ret["details"]["content"];

@@ -33,6 +33,17 @@ function load_nagios_data(show_spinner) {
   $.ajaxSetup({ cache: false });
 }
 
+function load_cluster_data(show_spinner) {
+
+  $("#nagioscontainer").load("cluster_view.php", function() { $("#spinner").fadeOut("fast"); });
+  var refreshId = setInterval(function() {
+      if (show_spinner) {
+        $("#spinner").fadeIn("fast");
+      }
+      $("#nagioscontainer").load("cluster_view.php", function() { $("#spinner").fadeOut("fast"); });
+  }, document.refresh_every_ms);
+  $.ajaxSetup({ cache: false });
+}
 /**
  * Tell nagios to do stuff
  *
@@ -52,5 +63,14 @@ function nagios_action(tag, host, service, action, minutes) {
                             duration: minutes}, function(data) { showInfo(data) } );
 }
 
-
+// Toggle hidden displays to be visible and vice versa.
+function toggle_visibility(id) {
+    var el = document.getElementById(id);
+    var toggled_id = document.getElementById(id).id;
+    if (el.style.display == "block") {
+        el.style.display = "none";
+    } else {
+        el.style.display = "block";
+    }
+}
 

@@ -194,6 +194,12 @@ class NagdashHelpers {
         return [$state, $api_cols, $errors, $curl_stats];
     }
 
+    // TODO: Pull out code from parse_nagios_host_data() into two new, smaller functions.
+    function parse_nagios_host_states() {
+    }
+    function parse_nagios_service_states() {
+    }
+
     /**
      * parse the state array into a format that we can easily display
      *
@@ -219,19 +225,58 @@ class NagdashHelpers {
         if ($filter_select_last_state_change > 0) {
             $state_change_backstop = time() - $filter_select_last_state_change;
         }
+        // If our calling script is 'cluster_view.php', show us everything.
+        // TODO: We'll use this bit of code soon...
+        if (strcmp(basename($_SERVER['SCRIPT_FILENAME']), "cluster_view.php") == 0) {
+            echo "<h2>Cluster View</h2>";
+        }
         foreach ($state as $hostname => $host_detail) {
             // Check if the host matches the filter
             if (preg_match("/$filter/", $hostname)) {
                 // If the host is NOT OK...
-                if ($host_detail[$api_cols['state']] != 0) {
+                //if ($host_detail[$api_cols['state']] != 0) { //TEMP
+                if ($host_detail[$api_cols['state']] >= 0) { // GRAB EVERYTHING; NOTE: Causes issue with utils code re: "if $known_hosts > 0..."
                     // Sort the host into the correct array. It's either a known issue or not.
-                    if ( ($host_detail[$api_cols['ack']] > 0) || ((isset($host_detail['scheduled_downtime_depth']) && $host_detail['scheduled_downtime_depth'] > 0)) || ($host_detail['notifications_enabled'] == 0) ) {
-                        $array_name = "known_hosts";
-                    } else {
-                        $array_name = "down_hosts";
-                    }
+//                    if ( ($host_detail[$api_cols['ack']] > 0) || ((isset($host_detail['scheduled_downtime_depth']) && $host_detail['scheduled_downtime_depth'] > 0)) || ($host_detail['notifications_enabled'] == 0) ) {
+//                        $array_name = "known_hosts";
+//                    } else {
+//                        $array_name = "down_hosts";
+//                    }
+                    $array_name = "down_hosts"; // Put everything into 'down_hosts'. I know...
                     // Populate the array.
                     if ($host_detail['last_state_change'] >= $state_change_backstop) {
+                        $services = array();
+                        foreach ($host_detail['services'] as $service_name => $service_detail) {
+                            $downtime_remaining = null;
+                            $downtimes = array_merge($service_detail['downtimes'], $host_detail['downtimes']);
+                            if ((isset($host_detail['scheduled_downtime_depth']) && $host_detail['scheduled_downtime_depth'] > 0)
+                                || (isset($service_detail['scheduled_downtime_depth']) && $service_detail['scheduled_downtime_depth'] > 0)
+                            ) {
+                                if (count($downtimes) > 0) {
+                                    $downtime_info = array_pop($downtimes);
+                                    $downtime_remaining = "- ". timeago($downtime_info['end_time']) . " left";
+                                }
+                            }
+                            array_push($services, array(
+                                "hostname" => $hostname,
+                                "service_name" => $service_name,
+                                "service_state" => $service_detail[$api_cols['state']],
+                                "duration" => timeago($service_detail['last_state_change']),
+                                "last_state_change" => $service_detail['last_state_change'],
+                                "detail" => $service_detail['plugin_output'],
+                                "long_plugin_output" => (isset($service_detail['long_plugin_output'])) ? $service_detail['long_plugin_output'] : "",
+                                "notes" => (isset($service_detail['notes'])) ? $service_detail['notes'] : "",
+                                "action_url" => (isset($service_detail['action_url'])) ? $service_detail['action_url'] : "",
+                                "current_attempt" => $service_detail['current_attempt'],
+                                "max_attempts" => $service_detail[$api_cols['max_attempts']],
+                                "tag" => $host_detail['tag'],
+                                "is_hard" => ($service_detail['current_attempt'] >= $service_detail[$api_cols['max_attempts']]) ? true : false,
+                                "is_downtime" => ((isset($service_detail['scheduled_downtime_depth']) && $service_detail['scheduled_downtime_depth'] > 0) || (isset($host_detail['scheduled_downtime_depth']) && $host_detail['scheduled_downtime_depth'] > 0)) ? true : false,
+                                "downtime_remaining" => $downtime_remaining,
+                                "is_ack" => ($service_detail[$api_cols['ack']] > 0) ? true : false,
+                                "is_enabled" => ($service_detail['notifications_enabled'] > 0) ? true : false,
+                            ));
+                        }
                         array_push($$array_name, array(
                             "hostname" => $hostname,
                             "host_state" => $host_detail{$api_cols['state']},
@@ -244,6 +289,7 @@ class NagdashHelpers {
                             "is_downtime" => (isset($host_detail['scheduled_downtime_depth']) && $host_detail['scheduled_downtime_depth'] > 0) ? true : false,
                             "is_ack" => ($host_detail[$api_cols['ack']] > 0) ? true : false,
                             "is_enabled" => ($host_detail['notifications_enabled'] > 0) ? true : false,
+                            "services" => $services,
                         ));
                     }
                 }

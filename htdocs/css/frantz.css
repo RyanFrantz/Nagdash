@@ -1,0 +1,173 @@
+body {
+    font-family: "HelveticaNeue-Medium", Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+#wrapper {
+    border:1px solid #bbb;
+    padding:2px;
+    background-color: #F0F0F0;
+    border-radius: 4px;
+}
+
+#header-bar {
+    /*border:1px solid #bbb;*/ /* Keep this for visual debugging. */
+    height:25px;
+    padding:2px;
+}
+
+#header-bar div {
+    display:inline-block;
+    border: 1px black solid;
+    background-color: #D8D8D8;
+    text-align:center;
+    font-weight: bold;
+    padding:2px;
+}
+
+#content {
+    /*border:1px solid #bbb;*/ /* Keep this for visual debugging. */
+    color: white;
+    padding:0px;
+}
+
+/* Alternative to using something like 'float:left;'. */
+.floating-box {
+    display: inline-block;
+}
+
+/*
+ * The total of all width values for the 'name', 'state', 'duration', and
+ * 'detail' classes must not exceed 97% else they overflow their container.
+ * This is due, I believe, to a quick with 'display: inline-block;' where
+ * it adds whitespace between elements that cannot be (easily) removed.
+ *
+ * Also, looks like our unicode arrows are just a bit taller than our text.
+ * Fix the height of these blocks to accommodate it.
+ */
+.name {
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    padding:3px;
+    height: 25px;
+}
+
+.state {
+    display: inline-block;
+    width: 10%;
+    text-align: center;
+    vertical-align: top;
+    padding:3px;
+    height: 25px;
+}
+
+.duration {
+    display: inline-block;
+    width: 15%;
+    text-align: center;
+    vertical-align: top;
+    padding:3px;
+    height: 25px;
+}
+
+.detail {
+    display: inline-block;
+    width: 52%;
+    vertical-align: top;
+    padding:3px;
+    height: 25px;
+}
+
+
+.cluster {
+    margin-top: 2px;
+    padding:3px;
+}
+
+/* Hide services by default. */
+.services {
+    display:none;
+}
+
+/* To aid legibility, push the service name right, in contrast with the
+ * host/cluster name that is left-justified. */
+.services .name {
+    text-align: right;
+}
+
+/* Let just enough light in that we can distinguish service rows. */
+.service-row {
+    margin-top:1px;
+}
+
+.service-row .name {
+    height: 50px;
+}
+
+.service-row .state {
+    height: 50px;
+}
+
+.service-row .duration {
+    height: 50px;
+}
+
+.service-row .detail {
+    height: 50px;
+}
+
+/* Hide service long output by default. */
+.service-long-output {
+    display:none;
+    margin-top:1px;
+    margin-right:7px;
+    margin-left: 47.1%;
+    padding:3px;
+}
+
+
+.ok {
+    background-color: #66cc66; /* pastel green */
+}
+
+.service-row .ok {
+    /*background-color: #00b300;*/
+    background-color: #91E091; /* lighter pastel green */
+}
+
+.warning {
+    background-color: orange;
+}
+
+.service-row .warning {
+    background-color: #ffc966;
+}
+
+.critical {
+    background-color: #ff6666; /* pastel red */
+}
+
+.service-row .critical {
+    /* background-color: #ff6666; */
+    background-color: #FF8A8A; /* lighter pastel red */
+}
+
+.up {
+    /*background-color: green;*/
+    background-color: #66cc66;
+}
+
+.down {
+    background-color: #ff6666; /* pastel red */
+}
+
